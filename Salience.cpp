@@ -100,5 +100,6 @@ int main()
 	
 	return (0);
 }
-
-
+0.1.1)
+Character name generator prototype.
+Generates 7-10 letter long name of alternating vowels and consonants. Hereby considered "VCon" method.
