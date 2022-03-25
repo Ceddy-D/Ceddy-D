@@ -1,9 +1,8 @@
-- Yo, I'm Ceddy.
-- I make really shit and non portable c++ programs.
-- Have fun looking at the most Italian pasta bs code you've ever seen.
-- Have a seat. I'll be right with you...
-
-<!---
-Ceddy-D/Ceddy-D is a ✨ special ✨ repository because its `README.md` (this file) appears on your GitHub profile.
-You can click the Preview link to take a look at your changes.
---->
+- Welcome to Salience: Worldbuilding Generator!
+- The plan is to make a single .exe file that designs whatever you may need for your creative spirit!
+- Character Names, character descriptions, countries, battles, planets, materials, etc, all randomly generated.
+- As you can already guess, I use win32 API and make little to no attempt to make it portable. Sorry Club Penguin users.
+- Suggestions encouraged!
+-
+- All the best,
+- Ceddy D
