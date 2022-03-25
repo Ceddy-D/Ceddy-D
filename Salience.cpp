@@ -1,11 +1,16 @@
 /*
 Salience: WorldBuilding Generator
-indev 0.2
+indev 0.1.3
 =================================
 Roadmap:
-Better name generation method or methods.
-Loop name generator
-Update UI
+Function for more character details.
+Update UI.
+	Menu
+	Title screen
+	Colors
+(Optional) Another name generation method using more sophisticated methods
+(Optional) Switching between generation methods for the same name.
+
 Create debug window (either below, or seperate window.)
 */
 
@@ -27,7 +32,7 @@ bool g_Debug = 0;	//0 = debug off, 1 = debug on.
 string g_FullNameFinal [100];	//This is completely overkill and probably hella memory inefficient, but I don't want to eff with vectors right now.
 
 
-class NameMinMax
+class NameMinMax			//As its name suggests, defines the minimum and maximum letters of the name.
 {
 	public:
 	int NameMin;
@@ -53,19 +58,20 @@ void cls()
   SetConsoleCursorPosition ( h, coord );
 }
 
-// color function
+// color function (Yes this isn't doing anything right now, I know. I'll add calls to it in the future.)
 void Color(int color)
 {
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
 }
 
 
-void generateName(int NAME_MIN, int NAME_MAX, int DoAbbreviate /*0 = Not Abr, 1 = Abr, 2 = rand*/, int StartVowel /*0= vowl, 1 = cons, 2 = rand*/)
+void generateName(int NAME_MIN, int NAME_MAX, int DoAbbreviate /*0 = Not Abr, 1 = Abr, 2 = rand*/, 		//line split for redability...
+int StartVowel /*0= vowl, 1 = cons, 2 = rand*/, int NameGeneratorMethod /*0 = VCons, 1 = VCChunk*/)
 {
 	g_NameFinal = "";	//rests name each time function is called.
 	
 	//Variables.
-	int NameLengthFinal, CurrentLetterInt;
+	int NameLengthFinal, CurrentLetterInt, ChunkSize;
 	bool IsVowel, IsAbbreviated = false;
 	char CurrentLetter;
 	
@@ -76,7 +82,7 @@ void generateName(int NAME_MIN, int NAME_MAX, int DoAbbreviate /*0 = Not Abr, 1 
 	else 
 		IsVowel = rand() % 2 - 1;
 	
-	//Determines weather to abbreviate or not, primaraly for middle names. (Redundant as of now, but in place in case needed)
+	//Determines whether to abbreviate or not, primaraly for middle names. (Redundant as of now, but in place in case needed)
 	if (DoAbbreviate == 2)
 		DoAbbreviate = rand() % 2;
 	if (DoAbbreviate == 1)
@@ -92,22 +98,50 @@ void generateName(int NAME_MIN, int NAME_MAX, int DoAbbreviate /*0 = Not Abr, 1 
 		
 	if (g_Debug) cout << NameLengthFinal << endl;		//Probably wanna remove at some point.
 	
-	//Generates name (VCon method which kinda sucks, will add variable to switch between this method and better methods)
-	for (int i = 0; i< NameLengthFinal ; i++)
+	if (NameGeneratorMethod == 0)	//Generates name VCons method.
 	{
-		if (IsVowel == true)
+		for (int i = 0; i< NameLengthFinal ; i++)
 		{
-			CurrentLetterInt = rand() % 5;
-			IsVowel = false;
+			if (IsVowel == true)
+			{
+				CurrentLetterInt = rand() % 5;
+				IsVowel = false;
+			}
+			else
+			{
+				CurrentLetterInt = rand() % 21 + 5;
+				IsVowel = true;
+			}
+			
+			CurrentLetter = g_LetterList [CurrentLetterInt];		//Can create class or funtion with this to avoid writing
+																	//in every name generator method.
+			g_NameFinal = g_NameFinal + CurrentLetter;
 		}
-		else
+	}
+	
+	if (NameGeneratorMethod == 1)	//Generates name VCChunk method.
+	{
+		for (int i = 0; i < NameLengthFinal ; i++)
 		{
-			CurrentLetterInt = rand() % 21 + 5;
-			IsVowel = true;
+			ChunkSize = rand() % 3 + 1;
+			
+			while (IsVowel == true)
+			{
+				CurrentLetterInt = rand() % 5;			//using classes could shorten code, too lazy to try.
+				ChunkSize--;
+				if (ChunkSize == 0) IsVowel = false;
+			}
+			while (IsVowel == false and ChunkSize > 0)
+			{
+				CurrentLetterInt = rand() % 21 + 5;
+				ChunkSize--;
+				if (ChunkSize == 0) IsVowel = true;
+			}
+			
+			CurrentLetter = g_LetterList [CurrentLetterInt];
+			
+			g_NameFinal = g_NameFinal + CurrentLetter;
 		}
-		CurrentLetter = g_LetterList [CurrentLetterInt];
-		
-		g_NameFinal = g_NameFinal + CurrentLetter;
 	}
 	
 	//Adds period after abbreviation. Might make optional in future. Probably not.
@@ -118,7 +152,8 @@ void generateName(int NAME_MIN, int NAME_MAX, int DoAbbreviate /*0 = Not Abr, 1 
 	g_NameFinal[0] = toupper(g_NameFinal[0]);
 }
 
-void generateFullName(bool DoMiddleName, bool DoSurname, int DoMiddleNameAbbreviated, int DoSurnameAbbreviated, int FullNamePosition0to99)
+void generateFullName(bool DoMiddleName, bool DoSurname, int DoMiddleNameAbbreviated, //Line split for readability, same as generateName().
+int DoSurnameAbbreviated, int FullNamePosition0to99, int NameGeneratorMethod)
 {	
 	g_FullNameFinal [FullNamePosition0to99] = "";	//Initializes name.
 	
@@ -137,7 +172,7 @@ void generateFullName(bool DoMiddleName, bool DoSurname, int DoMiddleNameAbbrevi
 		DoSurnameAbbreviated = 0;
 	
 	
-	generateName(g_CharacterMinMax.NameMin, g_CharacterMinMax.NameMax, 0, 2);	//Generates first name.
+	generateName(g_CharacterMinMax.NameMin, g_CharacterMinMax.NameMax, 0, 2, NameGeneratorMethod);	//Generates first name.
 	g_FullNameFinal [FullNamePosition0to99] = g_FullNameFinal [FullNamePosition0to99] + g_NameFinal;	/*Adds first name to g_FullNameFinal.
 																										Note: Repeats in this function so
 																										that generateName() can be used for
@@ -146,7 +181,7 @@ void generateFullName(bool DoMiddleName, bool DoSurname, int DoMiddleNameAbbrevi
 	if (DoMiddleName)	//Generates middle name.
 	{
 		g_FullNameFinal [FullNamePosition0to99]  = g_FullNameFinal [FullNamePosition0to99]  + " ";
-		generateName(g_CharacterMinMax.NameMin, g_CharacterMinMax.NameMax, DoMiddleNameAbbreviated, 2);
+		generateName(g_CharacterMinMax.NameMin, g_CharacterMinMax.NameMax, DoMiddleNameAbbreviated, 2, NameGeneratorMethod);
 		
 		g_FullNameFinal [FullNamePosition0to99] = g_FullNameFinal [FullNamePosition0to99] + g_NameFinal;	//Adds middle name to g_FullNameFinal.
 	}
@@ -156,7 +191,7 @@ void generateFullName(bool DoMiddleName, bool DoSurname, int DoMiddleNameAbbrevi
 		if (DoMiddleNameAbbreviated == 0 or DoSurnameAbbreviated == 0)										//Adds space if either middle or surname aren't
 			g_FullNameFinal [FullNamePosition0to99]  = g_FullNameFinal [FullNamePosition0to99] + " ";		//abbreviated eg. "Rigo M.O." not "Rigo M. O.".
 		
-		generateName(g_CharacterMinMax.NameMin, g_CharacterMinMax.NameMax, DoSurnameAbbreviated, 2);
+		generateName(g_CharacterMinMax.NameMin, g_CharacterMinMax.NameMax, DoSurnameAbbreviated, 2, NameGeneratorMethod);
 		
 		g_FullNameFinal [FullNamePosition0to99] = g_FullNameFinal [FullNamePosition0to99] + g_NameFinal;	//Adds surname to g_FullNameFinal.
 	}
@@ -167,11 +202,11 @@ int main()
 {
 	//Variables
 	int FullNamePosition0to99 = 0;
-	
+	int NameGeneratorMethod;		//0 = VCons, 1 = VCChunk
 	
 	srand (time(NULL)); //Initialize random seed.
 	
-	cout << "Salience 0.1.2" << endl;
+	cout << "Salience 0.1.3" << endl;
 	cout << "2022 Ceddy D" << endl << endl;
 	cout << "Ultimate worldbuilding engine." << endl;
 	cout << "Press any key to continue...";
@@ -187,7 +222,7 @@ int main()
 		
 		if (g_Debug) cout << g_CharacterMinMax.NameMin << " " << g_CharacterMinMax.NameMax << endl << endl;	//debug
 		
-		generateFullName(1,1,2,2,FullNamePosition0to99);
+		generateFullName(1,1,2,2,FullNamePosition0to99, 1);
 		cout << "Character Name: " << g_FullNameFinal [FullNamePosition0to99] << endl;
 		cout << "Press any key to continue...";
 		getch();
@@ -210,4 +245,7 @@ Debug variable added (set to false)
 Loops VCon name every time a key is pressed.
 Creates first, middle, and surname.
 middle name and surname can be abbreviated.
+0.1.3)
+Added generation method where it generates random 1-3 character long chunk of alternating vowels and consonants. Hereby considered "VCChunk" method.
+
 */
