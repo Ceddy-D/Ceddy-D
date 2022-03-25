@@ -1,4 +1,4 @@
-- Yo, I'm Ced.
+- Yo, I'm Ceddy.
 - I make really shit and non portable c++ programs.
 - Have fun looking at the most Italian pasta bs code you've ever seen.
 - Have a seat. I'll be right with you...
