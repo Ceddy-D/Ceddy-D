@@ -12,6 +12,16 @@ Update UI.
 (Optional) Switching between generation methods for the same name.
 
 Create debug window (either below, or seperate window.)
+
+generate other things such as:
+	planets
+	solar systems
+	continents/ islands
+	countries
+	materials/ elements (down to the quark)
+	weapons
+	castles
+	and more 
 */
 
 #include <iostream>		//cout
@@ -27,12 +37,13 @@ using namespace std;
 
 //global variables
 string g_NameFinal;
-char g_LetterList [] = {'a','e','i','o','u','b','c','d','f','g','h','j','k','l','m','n','p','q','r','s','t','v','w','x','y','z'};	// 0/4 = vowels, 5/25 consonants
+char g_LetterList [] = {	//Note: line split for readability.
+'a','e','i','o','u','b','c','d','f','g','h','j','k','l','m','n','p','q','r','s','t','v','w','x','y','z'};	// 0/4 = vowels, 5/25 consonants
 bool g_Debug = 0;	//0 = debug off, 1 = debug on.
 string g_FullNameFinal [100];	//This is completely overkill and probably hella memory inefficient, but I don't want to eff with vectors right now.
 
 
-class NameMinMax			//As its name suggests, defines the minimum and maximum letters of the name.
+class NameMinMax			//As its name suggests, defines the minimum and maximum letters of g_NameFinal.
 {
 	public:
 	int NameMin;
@@ -66,7 +77,7 @@ void Color(int color)
 
 
 void generateName(int NAME_MIN, int NAME_MAX, int DoAbbreviate /*0 = Not Abr, 1 = Abr, 2 = rand*/, 		//line split for redability...
-int StartVowel /*0= vowl, 1 = cons, 2 = rand*/, int NameGeneratorMethod /*0 = VCons, 1 = VCChunk*/)
+int StartVowel /*0= vowl, 1 = cons, 2 = rand*/, int NameGeneratorMethod /*0 = VCons, 1 = VCChunk*/ /*, int DoDiaretics /*Includes */)
 {
 	g_NameFinal = "";	//rests name each time function is called.
 	
@@ -113,34 +124,34 @@ int StartVowel /*0= vowl, 1 = cons, 2 = rand*/, int NameGeneratorMethod /*0 = VC
 				IsVowel = true;
 			}
 			
-			CurrentLetter = g_LetterList [CurrentLetterInt];		//Can create class or funtion with this to avoid writing
+			CurrentLetter = g_LetterList [CurrentLetterInt];		//Can create funtion with these 2 lines to avoid writing
 																	//in every name generator method.
 			g_NameFinal = g_NameFinal + CurrentLetter;
 		}
 	}
 	
-	if (NameGeneratorMethod == 1)	//Generates name VCChunk method.
+	if (NameGeneratorMethod == 1)	//Generates name VCChunk method. (It's a huge mess that I have to clean up.)
 	{
-		for (int i = 0; i < NameLengthFinal ; i++)
+		for (int i = 0; i < NameLengthFinal;)
 		{
-			ChunkSize = rand() % 3 + 1;
+			ChunkSize = rand() % (2+IsVowel) + 1;	//(2+IsVowel) ensures that vowels can be in chunks of 3, but not consonants.
 			
-			while (IsVowel == true)
+			if (IsAbbreviated) ChunkSize = 1;	//Makes it so abbreviations are only 1 letter.
+			
+			while (ChunkSize > 0)
 			{
-				CurrentLetterInt = rand() % 5;			//using classes could shorten code, too lazy to try.
+				if (IsVowel == true)
+					CurrentLetterInt = rand() % 5;
+				else CurrentLetterInt = rand() % 21 + 5;
 				ChunkSize--;
-				if (ChunkSize == 0) IsVowel = false;
-			}
-			while (IsVowel == false and ChunkSize > 0)
-			{
-				CurrentLetterInt = rand() % 21 + 5;
-				ChunkSize--;
-				if (ChunkSize == 0) IsVowel = true;
-			}
+				
+				CurrentLetter = g_LetterList [CurrentLetterInt];
 			
-			CurrentLetter = g_LetterList [CurrentLetterInt];
-			
-			g_NameFinal = g_NameFinal + CurrentLetter;
+				g_NameFinal = g_NameFinal + CurrentLetter;
+				i++;
+			}
+			if (IsVowel) IsVowel = false;
+			else IsVowel = true;
 		}
 	}
 	
@@ -202,11 +213,11 @@ int main()
 {
 	//Variables
 	int FullNamePosition0to99 = 0;
-	int NameGeneratorMethod;		//0 = VCons, 1 = VCChunk
+	int NameGeneratorMethod = 1;		//0 = VCons, 1 = VCChunk
 	
 	srand (time(NULL)); //Initialize random seed.
 	
-	cout << "Salience 0.1.3" << endl;
+	cout << "Salience 0.1.3.1.0" << endl;
 	cout << "2022 Ceddy D" << endl << endl;
 	cout << "Ultimate worldbuilding engine." << endl;
 	cout << "Press any key to continue...";
@@ -222,7 +233,7 @@ int main()
 		
 		if (g_Debug) cout << g_CharacterMinMax.NameMin << " " << g_CharacterMinMax.NameMax << endl << endl;	//debug
 		
-		generateFullName(1,1,2,2,FullNamePosition0to99, 1);
+		generateFullName(1,1,2,2,FullNamePosition0to99, NameGeneratorMethod);
 		cout << "Character Name: " << g_FullNameFinal [FullNamePosition0to99] << endl;
 		cout << "Press any key to continue...";
 		getch();
@@ -233,19 +244,23 @@ int main()
 
 
 /*
-Version History)
+Version History:
+(Versions use the syntax "FullRelease.MajorUpdate.MinorUpdate.BugFix.CodeCleanup")
 ================
-0.1.1)
+0.1.1.0.0)
 Character name generator prototype.
 Generates 7-10 letter long name of alternating vowels and consonants. Hereby considered "VCon" method.
-0.1.2)
+0.1.2.0.0)
 Add capital letter at start of name. 
 Code cleanup. 
 Debug variable added (set to false)
 Loops VCon name every time a key is pressed.
 Creates first, middle, and surname.
 middle name and surname can be abbreviated.
-0.1.3)
+0.1.3.0.0)
 Added generation method where it generates random 1-3 character long chunk of alternating vowels and consonants. Hereby considered "VCChunk" method.
-
+0.1.3.1.0)
+Fixed VCChunk to actually work.
+Updated roadmap.
+Preparing to add diacritical characters in name generation. (eg. é).
 */
