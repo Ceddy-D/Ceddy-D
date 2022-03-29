@@ -1,6 +1,6 @@
 /*
 Salience: WorldBuilding Generator
-indev 0.1.3
+indev 0.1.3.2.0
 =================================
 Roadmap:
 Function for more character details.
@@ -217,15 +217,15 @@ int main()
 	
 	srand (time(NULL)); //Initialize random seed.
 	
-	cout << "Salience 0.1.3.1.0" << endl;
+	cout << "Salience 0.1.3.2.0" << endl;
 	cout << "2022 Ceddy D" << endl << endl;
 	cout << "Ultimate worldbuilding engine." << endl;
 	cout << "Press any key to continue...";
 	getch();
 	
 	
-	g_CharacterMinMax.NameMin = 7;	//Add inputs at some point.
-	g_CharacterMinMax.NameMax = 10;
+	g_CharacterMinMax.NameMin = 4;	//Add inputs at some point.
+	g_CharacterMinMax.NameMax = 7;
 	
 	while(1)	//TERRIBLE syntax, change to variable ASAP.
 	{
@@ -263,4 +263,8 @@ Added generation method where it generates random 1-3 character long chunk of al
 Fixed VCChunk to actually work.
 Updated roadmap.
 Preparing to add diacritical characters in name generation. (eg. é).
+0.1.3.1.1)
+Does the following to make names more readable:
+	Changes minimum name length from 7 to 4	
+	Changes maximum name length from 10 to 7
 */
