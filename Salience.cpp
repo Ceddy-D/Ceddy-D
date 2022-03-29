@@ -1,6 +1,8 @@
+// I am pp. This is Cedric. It is pronounced "see dick".
+
 /*
 Salience: WorldBuilding Generator
-indev 0.1.3.2.0
+indev 0.1.3.2.2
 =================================
 Roadmap:
 Function for more character details.
@@ -35,13 +37,6 @@ generate other things such as:
 
 using namespace std;
 
-//global variables
-string g_NameFinal;
-char g_LetterList [] = {	//Note: line split for readability.
-'a','e','i','o','u','b','c','d','f','g','h','j','k','l','m','n','p','q','r','s','t','v','w','x','y','z'};	// 0/4 = vowels, 5/25 consonants
-bool g_Debug = 0;	//0 = debug off, 1 = debug on.
-string g_FullNameFinal [100];	//This is completely overkill and probably hella memory inefficient, but I don't want to eff with vectors right now.
-
 
 class NameMinMax			//As its name suggests, defines the minimum and maximum letters of g_NameFinal.
 {
@@ -49,6 +44,14 @@ class NameMinMax			//As its name suggests, defines the minimum and maximum lette
 	int NameMin;
 	int NameMax;
 };
+
+
+//global variables
+string g_NameFinal;
+string g_FullNameFinal [100];	//This is completely overkill and probably hella memory inefficient, but I don't want to eff with vectors right now.
+char g_LetterList [] = {	//Note: line split for readability.
+'a','e','i','o','u','b','c','d','f','g','h','j','k','l','m','n','p','q','r','s','t','v','w','x','y','z'};	// 0/4 = vowels, 5/25 consonants
+bool g_Debug = 0;	//0 = debug off, 1 = debug on.
 NameMinMax g_CharacterMinMax;
 
 
@@ -69,22 +72,28 @@ void cls()
   SetConsoleCursorPosition ( h, coord );
 }
 
-// color function (Yes this isn't doing anything right now, I know. I'll add calls to it in the future.)
+//Color function (Yes this isn't doing anything right now, I know. I'll add calls to it in the future.)
 void Color(int color)
 {
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
 }
 
+//Adds the letter determined in generateName() to g_NameFinal.
+void letterAdd(int CurrentLetterInt)
+{
+	char CurrentLetter = g_LetterList [CurrentLetterInt];		
+
+	g_NameFinal = g_NameFinal + CurrentLetter;
+}
 
 void generateName(int NAME_MIN, int NAME_MAX, int DoAbbreviate /*0 = Not Abr, 1 = Abr, 2 = rand*/, 		//line split for redability...
 int StartVowel /*0= vowl, 1 = cons, 2 = rand*/, int NameGeneratorMethod /*0 = VCons, 1 = VCChunk*/ /*, int DoDiaretics /*Includes */)
 {
 	g_NameFinal = "";	//rests name each time function is called.
 	
-	//Variables.
+	//Variables
 	int NameLengthFinal, CurrentLetterInt, ChunkSize;
 	bool IsVowel, IsAbbreviated = false;
-	char CurrentLetter;
 	
 	
 	//Determines whether to start name with consonant or vowel, or random.
@@ -107,8 +116,8 @@ int StartVowel /*0= vowl, 1 = cons, 2 = rand*/, int NameGeneratorMethod /*0 = VC
 	else
 		NameLengthFinal = rand() % (NAME_MAX - NAME_MIN) + NAME_MIN;
 		
-	if (g_Debug) cout << NameLengthFinal << endl;		//Probably wanna remove at some point.
-	
+	//Generates name...
+		
 	if (NameGeneratorMethod == 0)	//Generates name VCons method.
 	{
 		for (int i = 0; i< NameLengthFinal ; i++)
@@ -124,9 +133,7 @@ int StartVowel /*0= vowl, 1 = cons, 2 = rand*/, int NameGeneratorMethod /*0 = VC
 				IsVowel = true;
 			}
 			
-			CurrentLetter = g_LetterList [CurrentLetterInt];		//Can create funtion with these 2 lines to avoid writing
-																	//in every name generator method.
-			g_NameFinal = g_NameFinal + CurrentLetter;
+			letterAdd(CurrentLetterInt);
 		}
 	}
 	
@@ -145,9 +152,7 @@ int StartVowel /*0= vowl, 1 = cons, 2 = rand*/, int NameGeneratorMethod /*0 = VC
 				else CurrentLetterInt = rand() % 21 + 5;
 				ChunkSize--;
 				
-				CurrentLetter = g_LetterList [CurrentLetterInt];
-			
-				g_NameFinal = g_NameFinal + CurrentLetter;
+				letterAdd(CurrentLetterInt);
 				i++;
 			}
 			if (IsVowel) IsVowel = false;
@@ -217,7 +222,7 @@ int main()
 	
 	srand (time(NULL)); //Initialize random seed.
 	
-	cout << "Salience 0.1.3.2.0" << endl;
+	cout << "Salience 0.1.3.2.2" << endl;
 	cout << "2022 Ceddy D" << endl << endl;
 	cout << "Ultimate worldbuilding engine." << endl;
 	cout << "Press any key to continue...";
@@ -265,6 +270,9 @@ Updated roadmap.
 Preparing to add diacritical characters in name generation. (eg. é).
 0.1.3.1.1)
 Does the following to make names more readable:
-	Changes minimum name length from 7 to 4	
-	Changes maximum name length from 10 to 7
+	Changes minimum name length from 7 to 4.
+	Changes maximum name length from 10 to 7.
+0.1.3.1.2
+	Cleaned up code a bit.
+	Edited comments.
 */
